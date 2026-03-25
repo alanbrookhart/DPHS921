@@ -1,7 +1,7 @@
 ---
 title: "Censoring and effect measure modification"
 author: "Alan Brookhart"
-date: "March 22, 2024"
+date: "March 22, 2026"
 output: pdf_document
 ---
 
