@@ -117,10 +117,25 @@ print(ipw_table1, smd = TRUE, printToggle = FALSE) %>% kable()
 
 ## Unadjusted survival curve
 
-Next we explore the association between statin initiation and the composite outcome of death or CV event by computing unadjusted survival curves of the composite event using Kaplan-Meier estimatir.  Here we see that statin initiators have substantially higher risk of experiencing the outcome than non-initiators.
+Next we explore the association between statin initiation and the composite outcome of death or CV event by computing unadjusted survival curves of the composite event using Kaplan-Meier estimator.  Here we see that statin initiators have substantially higher risk of experiencing the outcome than non-initiators.
+
+First, we have to 
 ```{r}
-sta_analy$event_time = ifelse(is.na(sta_analy$cv_death_time), 10,  sta_analy$death_time)
-sta_analy$event_indicator = ifelse(is.na(sta_analy$cv_death_time), 0, 1)
+# 1. Calculate event_time: The minimum of death, loss to follow-up, or admin end (10)
+sta_analy$event_time = pmin(
+  sta_analy$cv_death_time, 
+  sta_analy$loss_fu_time, 
+  10, 
+  na.rm = TRUE
+)
+
+# 2. Update the indicator: Only 1 if cv_death_time is the reason the follow-up ended
+# It must be non-NA AND less than or equal to the other censoring points
+sta_analy$event_indicator = ifelse(
+  !is.na(sta_analy$cv_death_time) & sta_analy$cv_death_time <= pmin(sta_analy$loss_fu_time, 10, na.rm = TRUE), 
+  1, 
+  0
+)
 
 unadjusted <- survival::survfit(Surv(event_time, event_indicator) ~ statin_use, data = sta_analy)
 ggsurv(unadjusted)
