@@ -1,7 +1,6 @@
 ---
 title: "Estimating IPTW survival curves and Cox proportional hazards regression"
 output:
-  word_document: default
   html_document: default
 ---
 
